@@ -1,1 +1,5 @@
-# SecureShop-36902-DDE
+## Integrantes
+ Andrade Danna
+ Pilaguano David
+ Tufiño Erick
+## Pendientes
