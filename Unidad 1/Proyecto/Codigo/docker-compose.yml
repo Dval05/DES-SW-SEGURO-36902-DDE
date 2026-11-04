@@ -1,0 +1,64 @@
+name: secure-backend-v1
+services:
+  auth-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: auth
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-local-auth-password-2026}
+      POSTGRES_DB: auth
+    volumes: [auth_data:/var/lib/postgresql/data]
+    ports: ["${BIND_ADDRESS:-127.0.0.1}:${AUTH_DB_PORT:-5435}:5432"]
+    healthcheck: {test: ["CMD-SHELL", "pg_isready -U auth"], interval: 5s, timeout: 3s, retries: 15}
+  auth:
+    build: ./auth
+    depends_on: {auth-db: {condition: service_healthy}}
+    environment:
+      PORT: 3001
+      DB_HOST: auth-db
+      DB_PORT: 5432
+      DB_USERNAME: auth
+      DB_PASSWORD: ${DB_PASSWORD:-local-auth-password-2026}
+      DB_DATABASE: auth
+      DB_SSL: "false"
+      DB_SYNCHRONIZE: "true"
+      JWT_PRIVATE_KEY_PATH: /run/secrets/jwt-private.pem
+      JWT_PUBLIC_KEY_PATH: /run/secrets/jwt-public.pem
+      JWT_ISSUER: secure-auth
+      JWT_AUDIENCE: secure-backend
+      JWT_EXPIRES_IN: 15m
+      STEGO_SERVICE_TOKEN: ${STEGO_SERVICE_TOKEN:-local-stego-service-token-change-2026}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-ChangeMe-Admin-2026!}
+      TLS_KEY_PATH: /run/secrets/auth.key
+      TLS_CERT_PATH: /run/secrets/auth.crt
+      NODE_EXTRA_CA_CERTS: /run/secrets/ca.crt
+    volumes:
+      - ./secrets/jwt/private.pem:/run/secrets/jwt-private.pem:ro
+      - ./secrets/jwt/public.pem:/run/secrets/jwt-public.pem:ro
+      - ./secrets/tls/auth.key:/run/secrets/auth.key:ro
+      - ./secrets/tls/auth.crt:/run/secrets/auth.crt:ro
+      - ./secrets/tls/ca.crt:/run/secrets/ca.crt:ro
+    ports: ["${BIND_ADDRESS:-127.0.0.1}:${AUTH_PORT:-3001}:3001"]
+    healthcheck: {test: ["CMD-SHELL", "node -e \"fetch('https://localhost:3001/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""], interval: 10s, timeout: 4s, retries: 15}
+  stego:
+    build: ./stego
+    depends_on: {auth: {condition: service_healthy}}
+    environment:
+      PORT: 3002
+      JWT_PUBLIC_KEY_PATH: /run/secrets/jwt-public.pem
+      JWT_ISSUER: secure-auth
+      JWT_AUDIENCE: secure-backend
+      AUTH_INTERNAL_URL: https://auth:3001
+      STEGO_SERVICE_TOKEN: ${STEGO_SERVICE_TOKEN:-local-stego-service-token-change-2026}
+      AUTH_TIMEOUT_MS: 3000
+      MAX_FILE_BYTES: 5242880
+      MAX_PIXELS: 16000000
+      LSB_THRESHOLD: 0.97
+      LSB_INCONCLUSIVE_FLOOR: 0.85
+      STEGO_DB_PATH: /app/data/stego.db
+      NODE_EXTRA_CA_CERTS: /run/secrets/ca.crt
+    volumes:
+      - ./secrets/jwt/public.pem:/run/secrets/jwt-public.pem:ro
+      - ./secrets/tls/ca.crt:/run/secrets/ca.crt:ro
+      - stego_data:/app/data
+    ports: ["${BIND_ADDRESS:-127.0.0.1}:${STEGO_PORT:-3002}:3002"]
+volumes: {auth_data: {}, stego_data: {}}
