@@ -1,0 +1,9 @@
+import { mkdir } from 'node:fs/promises'; import sharp from 'sharp'; const width=256,height=256,channels=3,n=width*height*channels;let state=0x12345678;const next=()=>{state^=state<<13;state^=state>>>17;state^=state<<5;return state>>>0};
+const base=Buffer.alloc(n);for(let y=0;y<height;y++)for(let x=0;x<width;x++){const i=(y*width+x)*3;base[i]=(x&127)*2;base[i+1]=(y&127)*2;base[i+2]=((x+y)&127)*2}
+const hidden=Buffer.from(base);for(let i=0;i<n;i++)hidden[i]=(hidden[i]&254)|(next()&1);
+const checker=Buffer.alloc(n);for(let y=0;y<height;y++)for(let x=0;x<width;x++){const v=((x>>4)+(y>>4))%2?220:40;checker.fill(v,(y*width+x)*3,(y*width+x)*3+3)}
+const noisy=Buffer.alloc(n);for(let i=0;i<n;i++)noisy[i]=next()&255;
+const sparse=Buffer.from(base);for(let i=0;i<n;i++)if(i%20===0)sparse[i]=(sparse[i]&254)|(next()&1);
+let pattern;for(let mask=0;mask<65536&&!pattern;mask++){const bits=Array.from({length:16},(_,i)=>(mask>>i)&1);const ones=bits.reduce((a,b)=>a+b,0)/16;let transitions=0;for(let i=1;i<bits.length;i++)transitions+=bits[i]!==bits[i-1]?1:0;const t=transitions/15;const score=((1-Math.abs(ones-.5)*2)+(1-Math.abs(t-.5)*2))/2;if(score>=.85&&score<.97)pattern=bits}
+const inconclusive=Buffer.from(base);for(let i=0;i<n;i++)inconclusive[i]=(inconclusive[i]&254)|pattern[i%pattern.length];
+await mkdir('../samples/original',{recursive:true});await mkdir('../samples/stego',{recursive:true});const raw={width,height,channels};await sharp(base,{raw}).png().toFile('../samples/original/reference.png');await sharp(checker,{raw}).png().toFile('../samples/original/checkerboard.png');await sharp(noisy,{raw}).png().toFile('../samples/original/noisy-unmodified.png');await sharp(hidden,{raw}).png().toFile('../samples/stego/lsb-random-payload.png');await sharp(sparse,{raw}).png().toFile('../samples/stego/lsb-sparse-payload.png');await sharp(inconclusive,{raw}).png().toFile('../samples/stego/lsb-inconclusive-pattern.png');
