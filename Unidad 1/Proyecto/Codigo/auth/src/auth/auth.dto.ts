@@ -1,0 +1,1 @@
+import { IsIn, IsOptional, IsString } from 'class-validator'; export class LoginDto{@IsString()identity!:string;@IsString()password!:string} export class AuthorizationCheckDto{@IsString()subject_token!:string;@IsIn(['steganography.analyze','steganography.result.read'])action!:'steganography.analyze'|'steganography.result.read';@IsOptional()@IsString()resource_id?:string|null}
