@@ -51,6 +51,7 @@ describe('STEGO real HTTP app, JWT guards, file pipeline and SQLite', () => {
           JSON.stringify({
             subject_id: subject,
             action: payload.action,
+            resource_id: payload.resource_id,
             allowed,
             roles: allowed ? ['ANALYST'] : ['USER'],
             reason: allowed

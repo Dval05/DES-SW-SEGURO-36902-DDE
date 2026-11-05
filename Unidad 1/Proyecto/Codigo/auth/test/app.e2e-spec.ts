@@ -185,6 +185,10 @@ describe('AUTH HTTP, PostgreSQL migrations and real guards', () => {
       .set('x-request-id', 'e2e-role-update')
       .send({ description: 'Actualizado' })
       .expect(200);
+    const roleList = await request(app.getHttpServer()).get('/api/roles').set(context).expect(200);
+    expect(roleList.body).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: role.body.id, description: 'Actualizado' }),
+    ]));
     const assignment = await request(app.getHttpServer())
       .post('/api/user-roles')
       .set(context)

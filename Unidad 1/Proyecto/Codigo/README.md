@@ -8,13 +8,15 @@ Dos microservicios NestJS independientes. AUTH administra identidades en Postgre
 .\scripts\start-demo.ps1
 ```
 
+El arranque genera una credencial aleatoria de servicio en `secrets/service.env` y la conserva en reinicios. Compose carga ese archivo en AUTH y STEGO. Para preparar los secretos antes de ejecutar Compose directamente, ejecute `.\scripts\generate-secrets.ps1`.
+
 Credencial de demostración: `admin` / `ChangeMe-Admin-2026!`. Cámbiela mediante `SEED_ADMIN_PASSWORD` antes de un uso distinto a la sustentación.
 
 - AUTH Swagger: https://localhost:3001/docs
-- STEGO Swagger: http://localhost:3002/api/docs
+- STEGO Swagger: http://localhost:3002/docs
 - PostgreSQL publicado: localhost:5435
 
-Windows no puede comprobar revocación de la CA local. Para probar sin desactivar la validación de cadena:
+AUTH usa una CA local de desarrollo (`secrets/tls/ca.crt`). Si el navegador o Postman no confían en esa CA, mostrarán un error de certificado. Para probar desde PowerShell con validación de cadena y nombre del servidor:
 
 ```powershell
 $login = curl.exe --ssl-no-revoke --cacert .\secrets\tls\ca.crt `
@@ -46,6 +48,8 @@ AUTH: `POST /api/auth/login`, `GET /api/auth/profile`, `POST /api/auth/logout`, 
 
 STEGO: `POST /api/steganography/analyze` (`multipart/form-data`, campo `file`) y `GET /api/steganography/results/:id`.
 
+Para consultar un resultado, STEGO comunica a AUTH el identificador y el propietario obtenido de SQLite. AUTH aplica el rol vigente y la propiedad, y vincula la decisión al identificador recibido. STEGO vuelve a comprobar la propiedad al devolver el registro.
+
 ## Comprobación
 
 ```powershell
@@ -58,15 +62,10 @@ npm run test --prefix stego
 
 Si AUTH no inicia, compruebe que el conjunto de secretos esté completo. El generador conserva claves existentes y se detiene ante un conjunto parcial. Si 5435 está ocupado, defina `AUTH_DB_PORT`.
 
-Los puertos se publican únicamente en `127.0.0.1`. STEGO usa HTTP externo solo para la demostración local; antes de habilitar acceso desde otros equipos se debe añadir HTTPS mediante proxy inverso o terminación TLS equivalente. Consulte [la guía de sustentación](docs/GUIA_SUSTENTACION.md).
+Los puertos se publican únicamente en `127.0.0.1`. STEGO usa HTTP externo solo para la demostración local; antes de habilitar acceso desde otros equipos se debe añadir HTTPS mediante proxy inverso o terminación TLS equivalente.
 
 ## Documentación para la defensa
 
-- [Informe técnico final](docs/INFORME_TECNICO_FINAL.md)
-- [Guía de estudio completa](docs/GUIA_ESTUDIO_COMPLETA.md)
-- [Banco de 70 preguntas](docs/PREGUNTAS_DEFENSA.md)
-- [Guía práctica de sustentación](docs/GUIA_SUSTENTACION.md)
-- [Matriz de riesgos](docs/MATRIZ_RIESGOS.md)
-- Colección y entorno: `postman_collection.json`, `postman_environment.json`
-
-La arquitectura, seguridad, técnica, riesgos, pruebas y evidencia están en `docs/`.
+- [Plan de pruebas previo al commit](PLAN_PRUEBAS_PRE_COMMIT.md)
+- [Colección y entorno QA de Postman](pruebas/postman-export/)
+- El enunciado, el informe, las guías y las evidencias se organizan localmente en `../documentacion/`, excluida temporalmente de Git.

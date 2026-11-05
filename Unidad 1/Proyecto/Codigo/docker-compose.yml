@@ -11,6 +11,7 @@ services:
     healthcheck: {test: ["CMD-SHELL", "pg_isready -U auth"], interval: 5s, timeout: 3s, retries: 15}
   auth:
     build: ./auth
+    env_file: ./secrets/service.env
     depends_on: {auth-db: {condition: service_healthy}}
     environment:
       PORT: 3001
@@ -26,7 +27,6 @@ services:
       JWT_ISSUER: secure-auth
       JWT_AUDIENCE: secure-backend
       JWT_EXPIRES_IN: 15m
-      STEGO_SERVICE_TOKEN: ${STEGO_SERVICE_TOKEN:-local-stego-service-token-change-2026}
       SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-ChangeMe-Admin-2026!}
       TLS_KEY_PATH: /run/secrets/auth.key
       TLS_CERT_PATH: /run/secrets/auth.crt
@@ -41,6 +41,7 @@ services:
     healthcheck: {test: ["CMD-SHELL", "node -e \"fetch('https://localhost:3001/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""], interval: 10s, timeout: 4s, retries: 15}
   stego:
     build: ./stego
+    env_file: ./secrets/service.env
     depends_on: {auth: {condition: service_healthy}}
     environment:
       PORT: 3002
@@ -48,7 +49,6 @@ services:
       JWT_ISSUER: secure-auth
       JWT_AUDIENCE: secure-backend
       AUTH_INTERNAL_URL: https://auth:3001
-      STEGO_SERVICE_TOKEN: ${STEGO_SERVICE_TOKEN:-local-stego-service-token-change-2026}
       AUTH_TIMEOUT_MS: 3000
       MAX_FILE_BYTES: 5242880
       MAX_PIXELS: 16000000

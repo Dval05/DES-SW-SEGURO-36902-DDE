@@ -67,7 +67,7 @@ export class UserRole {
   role!: Role;
 
   @CreateDateColumn({
-    name: 'fecha_asignacion',
+    name: 'assigned_at',
     type: 'timestamp',
   })
   fechaAsignacion!: Date;

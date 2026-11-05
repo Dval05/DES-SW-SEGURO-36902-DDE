@@ -36,4 +36,9 @@ export class AuthorizationCheckDto {
   @IsOptional()
   @IsUUID()
   resource_id?: string | null;
+
+  @ApiPropertyOptional({ type: String, format: 'uuid', nullable: true, description: 'Propietario consultado por STEGO en SQLite; null si no existe' })
+  @IsOptional()
+  @IsUUID()
+  resource_owner_id?: string | null;
 }

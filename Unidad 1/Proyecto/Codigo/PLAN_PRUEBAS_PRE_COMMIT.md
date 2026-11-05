@@ -41,7 +41,7 @@ En el siguiente commit normal, el hook prueba una copia temporal del índice Git
 | G07 | E2E AUTH con PostgreSQL temporal | AppModule, migración, API y guards reales; HTTP 400/401/403/409; roles nuevos, cambio de contraseña y esquemas |
 | G08 | E2E STEGO compilado | Guards antes de multipart, SQLite, análisis, límites y esquemas; AUTH simulado en la frontera externa |
 
-Línea base actual: **34 unitarias y 17 e2e**. Se deben aprobar todos los casos existentes; el número no es un límite fijo. El control falla con el código de salida de cada herramienta.
+Línea base actual: **36 unitarias y 17 e2e**. Se deben aprobar todos los casos existentes; el número no es un límite fijo. El control falla con el código de salida de cada herramienta.
 
 ### G09 — Integración real para cambios de seguridad o despliegue
 

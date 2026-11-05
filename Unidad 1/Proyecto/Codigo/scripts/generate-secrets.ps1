@@ -9,6 +9,22 @@ $jwt = Join-Path $root 'secrets\jwt'; $tls = Join-Path $root 'secrets\tls'
 New-Item -ItemType Directory -Force $jwt,$tls | Out-Null
 $required = @((Join-Path $jwt 'private.pem'),(Join-Path $jwt 'public.pem'),(Join-Path $tls 'ca.key'),(Join-Path $tls 'ca.crt'),(Join-Path $tls 'auth.key'),(Join-Path $tls 'auth.crt'))
 $present = @($required | Where-Object { Test-Path -LiteralPath $_ })
+$serviceFile = Join-Path $root 'secrets/service.env'
+if (!(Test-Path -LiteralPath $serviceFile)) {
+  $token = & $openssl rand -hex 32
+  if ($LASTEXITCODE -or $token -cnotmatch '^[a-f0-9]{64}$') { throw 'No se pudo generar la credencial de servicio' }
+  $temp = "$serviceFile.$([guid]::NewGuid().ToString('N')).tmp"
+  try {
+    [IO.File]::WriteAllText($temp, "STEGO_SERVICE_TOKEN=$token`n")
+    try { [IO.File]::Move($temp, $serviceFile) }
+    catch [IO.IOException] { if (!(Test-Path -LiteralPath $serviceFile)) { throw } }
+  } finally {
+    if (Test-Path -LiteralPath $temp) { Remove-Item -LiteralPath $temp }
+  }
+}
+if ((Get-Content -LiteralPath $serviceFile -Raw).Trim() -cnotmatch '^STEGO_SERVICE_TOKEN=[a-f0-9]{64}$') {
+  throw 'La credencial de servicio local tiene un formato inválido'
+}
 if ($present.Count -eq $required.Count) { Write-Host 'Los secretos ya existen; se conservan sin cambios.'; exit 0 }
 if ($present.Count -gt 0) { throw 'Conjunto de secretos incompleto. Corríjalo manualmente; el script no sobrescribirá claves existentes.' }
 & $openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072 -out (Join-Path $jwt 'private.pem')

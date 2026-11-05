@@ -70,7 +70,7 @@ export class User {
 
   @Exclude()
   @Column({
-    name: 'password',
+    name: 'password_hash',
     type: 'varchar',
     length: 255,
     select: false,
@@ -82,6 +82,7 @@ export class User {
   tokenVersion!: number;
 
   @Column({
+    name: 'status',
     type: 'boolean',
     default: true,
   })
@@ -93,19 +94,19 @@ export class User {
   version!: number;
 
   @CreateDateColumn({
-    name: 'fecha_creacion',
+    name: 'created_at',
     type: 'timestamp',
   })
   fechaCreacion!: Date;
 
   @UpdateDateColumn({
-    name: 'fecha_actualizacion',
+    name: 'updated_at',
     type: 'timestamp',
   })
   fechaActualizacion!: Date;
 
   @DeleteDateColumn({
-    name: 'fecha_eliminacion',
+    name: 'deleted_at',
     type: 'timestamp',
     nullable: true,
   })

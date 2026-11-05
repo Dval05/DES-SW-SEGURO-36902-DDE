@@ -91,15 +91,27 @@ export class AuthService {
     this.audit.event('logout', { userId: id, requestId });
     return { logged_out: true };
   }
-  async authorize(token: string, action: string, requestId?: string) {
+  async authorize(
+    token: string,
+    action: string,
+    requestId?: string,
+    resource?: { resource_id?: string | null; resource_owner_id?: string | null },
+  ) {
     const payload = await this.verifySubject(token);
     const roles = await this.ur.activeRoles(payload.sub);
-    const allowed =
+    const hasRole =
       ['steganography.analyze', 'steganography.result.read'].includes(action) &&
       roles.some((role) => role === 'ADMIN' || role === 'ANALYST');
-    const reason = allowed
+    const resourceId = resource?.resource_id ?? null;
+    const ownerId = resource?.resource_owner_id ?? null;
+    let reason = hasRole
       ? 'active_role_grants_permission'
       : 'no_active_role_grants_permission';
+    if (hasRole && action === 'steganography.result.read') {
+      if (!resourceId || !ownerId) reason = 'resource_not_found';
+      else if (ownerId !== payload.sub && !roles.includes('ADMIN')) reason = 'resource_not_owned';
+    }
+    const allowed = reason === 'active_role_grants_permission';
     this.audit.event('authorization_decision', {
       userId: payload.sub,
       action,
@@ -107,7 +119,7 @@ export class AuthService {
       reason,
       requestId,
     });
-    return { subject_id: payload.sub, action, allowed, reason, roles };
+    return { subject_id: payload.sub, action, resource_id: resourceId, allowed, reason, roles };
   }
 }
 function createHint(identity: string) {

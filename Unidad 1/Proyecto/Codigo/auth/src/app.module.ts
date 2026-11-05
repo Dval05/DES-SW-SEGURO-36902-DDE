@@ -13,6 +13,7 @@ import { UsersModule } from './users/users.module';
 import { SeedService } from './seed.service';
 import { AuditModule } from './common/audit.module';
 import { InitialIdentity1793740000000 } from './migrations/1793740000000-InitialIdentity';
+import { AlignIdentitySchema1793851200000 } from './migrations/1793851200000-AlignIdentitySchema';
 
 @Module({
   imports: [
@@ -40,7 +41,7 @@ import { InitialIdentity1793740000000 } from './migrations/1793740000000-Initial
         database: c.getOrThrow('DB_DATABASE'),
         autoLoadEntities: true,
         synchronize: false,
-        migrations: [InitialIdentity1793740000000],
+        migrations: [InitialIdentity1793740000000, AlignIdentitySchema1793851200000],
         migrationsRun: true,
         ssl: c.get('DB_SSL') === 'true' ? { rejectUnauthorized: true } : false,
       }),

@@ -23,6 +23,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { timingSafeEqual } from 'node:crypto';
 import { Throttle } from '@nestjs/throttler';
 import { AuditService } from '../common/audit.service';
 import { AuthService } from './auth.service';
@@ -65,12 +66,14 @@ export class AuthController {
     @Body() dto: AuthorizationCheckDto,
     @Req() req: any,
   ) {
-    if (!token || token !== this.config.getOrThrow('STEGO_SERVICE_TOKEN')) {
+    const expected = Buffer.from(this.config.getOrThrow<string>('STEGO_SERVICE_TOKEN'));
+    const supplied = Buffer.from(typeof token === 'string' ? token : '');
+    if (supplied.length !== expected.length || !timingSafeEqual(supplied, expected)) {
       this.audit.event('service_authentication_failed', {
         requestId: req.requestId,
       });
       throw new UnauthorizedException('Servicio no autenticado');
     }
-    return this.auth.authorize(dto.subject_token, dto.action, req.requestId);
+    return this.auth.authorize(dto.subject_token, dto.action, req.requestId, dto);
   }
 }

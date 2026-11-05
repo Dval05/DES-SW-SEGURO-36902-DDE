@@ -93,6 +93,21 @@ describe('JWT and current authorization', () => {
       (await service.authorize(access_token, 'steganography.analyze')).allowed,
     ).toBe(false);
   });
+  it('binds result permissions to the owner and resource', async () => {
+    const { access_token } = await service.login('analyst', 'Valid-password-2026!');
+    const action = 'steganography.result.read';
+    const id = '6490a953-5c15-47f9-9f81-e83338f4e3e1';
+    const decide = (owner: string | null) => service.authorize(access_token, action, undefined, {
+      resource_id: id,
+      resource_owner_id: owner,
+    });
+
+    await expect(decide(user.id)).resolves.toMatchObject({ allowed: true, resource_id: id });
+    await expect(decide(id)).resolves.toMatchObject({ allowed: false, reason: 'resource_not_owned' });
+    await expect(decide(null)).resolves.toMatchObject({ allowed: false, reason: 'resource_not_found' });
+    roles = ['ADMIN'];
+    await expect(decide(id)).resolves.toMatchObject({ allowed: true, resource_id: id });
+  });
   it('logout invalidates previously issued tokens', async () => {
     const { access_token } = await service.login(
       'analyst',

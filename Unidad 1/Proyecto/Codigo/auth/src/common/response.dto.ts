@@ -57,6 +57,7 @@ export class DeleteAssignmentResponseDto {
 }
 export class AuthorizationResponseDto {
   @ApiProperty({ format: 'uuid' }) subject_id!: string;
+  @ApiProperty({ type: String, format: 'uuid', nullable: true }) resource_id!: string | null;
   @ApiProperty({ enum: ['steganography.analyze', 'steganography.result.read'] })
   action!: string;
   @ApiProperty() allowed!: boolean;

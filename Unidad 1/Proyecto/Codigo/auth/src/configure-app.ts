@@ -11,7 +11,7 @@ import { AllExceptionsFilter } from './common/filters/all-exceptions/all-excepti
 
 export function configureAuthApp(app: INestApplication) {
   app.use(helmet());
-  app.setGlobalPrefix('api', { exclude: ['internal/{*path}', 'health'] });
+  app.setGlobalPrefix('api', { exclude: ['/', 'internal/{*path}', 'health'] });
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

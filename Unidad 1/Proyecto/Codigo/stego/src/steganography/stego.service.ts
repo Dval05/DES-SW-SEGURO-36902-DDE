@@ -21,6 +21,7 @@ import { AuditService } from '../common/audit.service.js';
 type Decision = {
   subject_id: string;
   action: string;
+  resource_id: string | null;
   allowed: boolean;
   reason: string;
   roles: string[];
@@ -48,6 +49,9 @@ export class StegoService {
     resourceId?: string,
     requestId?: string,
   ) {
+    const resource = resourceId
+      ? this.db.prepare('SELECT user_id FROM analyses WHERE id = ?').get(resourceId)
+      : undefined;
     const controller = new AbortController();
     const timeout = setTimeout(
       () => controller.abort(),
@@ -67,6 +71,7 @@ export class StegoService {
             subject_token: token,
             action,
             resource_id: resourceId ?? null,
+            resource_owner_id: resource?.user_id ?? null,
           }),
           signal: controller.signal,
         },
@@ -81,10 +86,14 @@ export class StegoService {
         typeof decision.subject_id !== 'string' ||
         !decision.subject_id ||
         decision.action !== action ||
+        decision.resource_id !== (resourceId ?? null) ||
+        typeof decision.reason !== 'string' ||
         !Array.isArray(decision.roles) ||
         !decision.roles.every((role) => typeof role === 'string')
       )
         throw new ServiceUnavailableException('Decision invalida');
+      if (!decision.allowed && action === 'steganography.result.read' && decision.reason === 'resource_not_found' && !resource)
+        throw new NotFoundException('Analisis no encontrado');
       if (!decision.allowed)
         throw new ForbiddenException('Permiso insuficiente');
       this.audit.event('authorization_decision', {
@@ -98,6 +107,7 @@ export class StegoService {
       if (
         error instanceof UnauthorizedException ||
         error instanceof ForbiddenException ||
+        error instanceof NotFoundException ||
         error instanceof ServiceUnavailableException
       )
         throw error;
