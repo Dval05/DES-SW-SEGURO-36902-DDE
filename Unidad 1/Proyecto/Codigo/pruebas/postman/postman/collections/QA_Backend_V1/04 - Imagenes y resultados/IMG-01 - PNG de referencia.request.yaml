@@ -1,0 +1,21 @@
+$kind: http-request
+name: IMG-01 | PNG de referencia
+description: ""
+url: "{{qa_stegoUrl}}/api/steganography/analyze"
+method: POST
+headers:
+  Authorization: Bearer {{qa_analystJwt}}
+body:
+  type: formdata
+  content:
+    - type: file
+      key: file
+      src: samples/original/reference.png
+      contentType: image/png
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('HTTP 201',()=>pm.response.to.have.status(201));
+      const j=pm.response.json();pm.test('Referencia sin indicios',()=>pm.expect(j.status).to.eql('sin_indicios'));if(j.id)pm.environment.set('qa_analysisId',j.id);
+    language: text/javascript
+order: 1000

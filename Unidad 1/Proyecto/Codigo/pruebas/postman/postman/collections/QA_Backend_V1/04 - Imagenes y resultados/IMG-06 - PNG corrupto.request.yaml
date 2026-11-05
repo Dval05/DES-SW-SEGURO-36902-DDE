@@ -1,0 +1,19 @@
+$kind: http-request
+name: IMG-06 | PNG corrupto
+description: ""
+url: "{{qa_stegoUrl}}/api/steganography/analyze"
+method: POST
+headers:
+  Authorization: Bearer {{qa_analystJwt}}
+body:
+  type: formdata
+  content:
+    - type: file
+      key: file
+      src: tmp/t10/corrupt.png
+      contentType: image/png
+scripts:
+  - type: afterResponse
+    code: pm.test('HTTP 422',()=>pm.response.to.have.status(422));
+    language: text/javascript
+order: 6000

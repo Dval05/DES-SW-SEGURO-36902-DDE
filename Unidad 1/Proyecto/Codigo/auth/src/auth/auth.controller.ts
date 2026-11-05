@@ -1,8 +1,76 @@
-import { ApiBearerAuth, ApiSecurity, ApiTags, ApiResponse } from '@nestjs/swagger';
-import { Body,Controller,Get,Headers,Post,Req,UnauthorizedException,UseGuards } from '@nestjs/common'; import { ConfigService } from '@nestjs/config'; import { Throttle } from '@nestjs/throttler'; import { AuditService } from '../common/audit.service'; import { AuthService } from './auth.service'; import { AuthorizationCheckDto,LoginDto } from './auth.dto'; import { JwtAuthGuard } from './jwt-auth.guard';
-@ApiTags('auth') @Controller() export class AuthController { constructor(private readonly auth:AuthService,private readonly config:ConfigService,private readonly audit:AuditService){}
-  @ApiResponse({status:429,description:'Demasiados intentos de login'}) @ApiResponse({status:401,description:'Credenciales invalidas'}) @Post('auth/login') @Throttle({default:{limit:5,ttl:60000}}) login(@Body()dto:LoginDto,@Req()req:any){return this.auth.login(dto.identity,dto.password,req.requestId)}
-  @ApiBearerAuth() @Get('auth/profile') @UseGuards(JwtAuthGuard) profile(@Req()req:any){return this.auth.profile(req.user.sub)}
-  @ApiBearerAuth() @Post('auth/logout') @UseGuards(JwtAuthGuard) logout(@Req()req:any){return this.auth.logout(req.user.sub,req.requestId)}
-  @ApiSecurity('serviceToken') @Post('/internal/authorization/check') async check(@Headers('x-service-token')token:string,@Body()dto:AuthorizationCheckDto,@Req()req:any){if(!token||token!==this.config.getOrThrow('STEGO_SERVICE_TOKEN')){this.audit.event('service_authentication_failed',{requestId:req.requestId});throw new UnauthorizedException('Servicio no autenticado')}return this.auth.authorize(dto.subject_token,dto.action,req.requestId)}
+import {
+  LoginResponseDto,
+  LogoutResponseDto,
+  AuthorizationResponseDto,
+  PublicUserDto,
+} from '../common/response.dto';
+import { ApiErrors } from '../common/api-errors';
+import {
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiBearerAuth,
+  ApiSecurity,
+  ApiTags,
+} from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  Post,
+  Req,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Throttle } from '@nestjs/throttler';
+import { AuditService } from '../common/audit.service';
+import { AuthService } from './auth.service';
+import { AuthorizationCheckDto, LoginDto } from './auth.dto';
+import { JwtAuthGuard } from './jwt-auth.guard';
+@ApiTags('auth')
+@ApiErrors(400, 401, 403, 429, 500)
+@Controller()
+export class AuthController {
+  constructor(
+    private readonly auth: AuthService,
+    private readonly config: ConfigService,
+    private readonly audit: AuditService,
+  ) {}
+  @ApiCreatedResponse({ type: LoginResponseDto })
+  @Post('auth/login')
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  login(@Body() dto: LoginDto, @Req() req: any) {
+    return this.auth.login(dto.identity, dto.password, req.requestId);
+  }
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: PublicUserDto })
+  @Get('auth/profile')
+  @UseGuards(JwtAuthGuard)
+  profile(@Req() req: any) {
+    return this.auth.profile(req.user.sub);
+  }
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ type: LogoutResponseDto })
+  @Post('auth/logout')
+  @UseGuards(JwtAuthGuard)
+  logout(@Req() req: any) {
+    return this.auth.logout(req.user.sub, req.requestId);
+  }
+  @ApiSecurity('serviceToken')
+  @ApiCreatedResponse({ type: AuthorizationResponseDto })
+  @Post('/internal/authorization/check')
+  async check(
+    @Headers('x-service-token') token: string,
+    @Body() dto: AuthorizationCheckDto,
+    @Req() req: any,
+  ) {
+    if (!token || token !== this.config.getOrThrow('STEGO_SERVICE_TOKEN')) {
+      this.audit.event('service_authentication_failed', {
+        requestId: req.requestId,
+      });
+      throw new UnauthorizedException('Servicio no autenticado');
+    }
+    return this.auth.authorize(dto.subject_token, dto.action, req.requestId);
+  }
 }

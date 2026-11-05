@@ -1,2 +1,9 @@
-import helmet from 'helmet'; import { ValidationPipe } from '@nestjs/common'; import { NestFactory } from '@nestjs/core'; import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'; import { AppModule } from './app.module.js';
-async function bootstrap(){const app=await NestFactory.create(AppModule);app.use(helmet());app.setGlobalPrefix('api');app.useGlobalPipes(new ValidationPipe({whitelist:true,forbidNonWhitelisted:true,transform:true}));const d=new DocumentBuilder().setTitle('STEGO API').setVersion('1.0').addBearerAuth().build();SwaggerModule.setup('docs',app,SwaggerModule.createDocument(app,d));await app.listen(process.env.PORT??3002,'0.0.0.0')}void bootstrap();
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module.js';
+import { configureStegoApp } from './configure-app.js';
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  configureStegoApp(app);
+  await app.listen(process.env.PORT ?? 3002, '0.0.0.0');
+}
+void bootstrap();

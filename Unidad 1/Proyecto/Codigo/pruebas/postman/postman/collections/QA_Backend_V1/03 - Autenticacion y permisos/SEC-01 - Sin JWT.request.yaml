@@ -1,0 +1,17 @@
+$kind: http-request
+name: SEC-01 | Sin JWT
+description: ""
+url: "{{qa_stegoUrl}}/api/steganography/analyze"
+method: POST
+body:
+  type: formdata
+  content:
+    - type: file
+      key: file
+      src: samples/original/reference.png
+      contentType: image/png
+scripts:
+  - type: afterResponse
+    code: pm.test('HTTP 401',()=>pm.response.to.have.status(401));
+    language: text/javascript
+order: 1000

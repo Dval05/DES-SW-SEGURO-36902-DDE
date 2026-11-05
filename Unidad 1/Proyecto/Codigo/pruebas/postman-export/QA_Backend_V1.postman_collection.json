@@ -1,0 +1,1249 @@
+{
+  "info": {
+    "_postman_id": "91f6ead4-56c1-4f5a-8d50-f129b6704108",
+    "name": "QA Backend V1 | Pre-commit y regresion | Nueva",
+    "description": "Coleccion nueva, independiente de la sustentacion anterior. Estado: preparada, pendiente de ejecucion en la GUI. No ejecutar la carpeta MANUAL dentro del Runner general. Credenciales y JWT solo en un entorno LOCAL; no exportarlos.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 | Preparacion y sesiones",
+      "description": "Ejecutar primero. Los tokens quedan en el entorno QA, nunca en la coleccion exportada.",
+      "item": [
+        {
+          "name": "INF-01 | AUTH disponible",
+          "description": "",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{qa_authUrl}}/health"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "INF-02 | STEGO disponible",
+          "description": "",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{qa_stegoUrl}}/api/health"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SES-admin | Login ADMIN",
+          "description": "",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{qa_authUrl}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identity\": \"{{qa_adminIdentity}}\",\n  \"password\": \"{{qa_adminPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+                  "if(pm.response.code===201) pm.environment.set('qa_adminJwt',pm.response.json().access_token);",
+                  "pm.test('JWT emitido y expiracion acotada',()=>{const j=pm.response.json();pm.expect(j.access_token).to.be.a('string');pm.expect(j.expires_in).to.be.within(1,3600);});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SES-analyst | Login ANALYST",
+          "description": "",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{qa_authUrl}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identity\": \"{{qa_analystIdentity}}\",\n  \"password\": \"{{qa_analystPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+                  "if(pm.response.code===201) pm.environment.set('qa_analystJwt',pm.response.json().access_token);",
+                  "pm.test('JWT emitido y expiracion acotada',()=>{const j=pm.response.json();pm.expect(j.access_token).to.be.a('string');pm.expect(j.expires_in).to.be.within(1,3600);});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SES-user | Login USER",
+          "description": "",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{qa_authUrl}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identity\": \"{{qa_userIdentity}}\",\n  \"password\": \"{{qa_userPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+                  "if(pm.response.code===201) pm.environment.set('qa_userJwt',pm.response.json().access_token);",
+                  "pm.test('JWT emitido y expiracion acotada',()=>{const j=pm.response.json();pm.expect(j.access_token).to.be.a('string');pm.expect(j.expires_in).to.be.within(1,3600);});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SES-01 | Perfil sin credenciales",
+          "description": "",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_analystJwt}}"
+              }
+            ],
+            "url": "{{qa_authUrl}}/api/auth/profile"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+                  "pm.test('Sin hash ni version de sesion',()=>{const j=pm.response.json();pm.expect(j).not.to.have.property('passwordHash');pm.expect(j).not.to.have.property('tokenVersion');});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SET-01 | Obtener usuarios e identificador ANALYST",
+          "description": "",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_adminJwt}}"
+              }
+            ],
+            "url": "{{qa_authUrl}}/api/users"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+                  "const users=pm.response.json();const u=users.find(x=>x.username===pm.environment.get('qa_analystIdentity'));pm.test('ANALYST existe',()=>pm.expect(u).to.be.an('object'));if(u)pm.environment.set('qa_analystId',u.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SET-02 | Obtener rol ANALYST",
+          "description": "",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_adminJwt}}"
+              }
+            ],
+            "url": "{{qa_authUrl}}/api/roles"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+                  "const role=pm.response.json().find(x=>x.rol==='ANALYST');pm.test('Rol ANALYST existe',()=>pm.expect(role).to.be.an('object'));if(role)pm.environment.set('qa_analystRoleId',role.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SET-03 | Obtener asignacion ANALYST",
+          "description": "",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_adminJwt}}"
+              }
+            ],
+            "url": "{{qa_authUrl}}/api/user-roles"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+                  "const relation=pm.response.json().find(x=>x.userId===pm.environment.get('qa_analystId')&&x.roleId===pm.environment.get('qa_analystRoleId'));pm.test('Asignacion vigente',()=>pm.expect(relation).to.be.an('object'));if(relation)pm.environment.set('qa_assignmentId',relation.id);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 | Validacion y contratos",
+      "item": [
+        {
+          "name": "VAL-01 | UUID invalido",
+          "description": "",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_adminJwt}}"
+              }
+            ],
+            "url": "{{qa_authUrl}}/api/users/bad-id"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400',()=>pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "VAL-02 | Fecha invalida",
+          "description": "",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_adminJwt}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{qa_authUrl}}/api/users/{{qa_analystId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fechaNacimiento\": \"2026-02-30\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400',()=>pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "VAL-03 | Null no permitido",
+          "description": "",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_adminJwt}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{qa_authUrl}}/api/users/{{qa_analystId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400',()=>pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "VAL-04 | Conflicto de username",
+          "description": "",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_adminJwt}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{qa_authUrl}}/api/users/{{qa_analystId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{qa_adminIdentity}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 409',()=>pm.response.to.have.status(409));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "VAL-05 | Rechazar campo no permitido",
+          "description": "",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_adminJwt}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{qa_authUrl}}/api/users/{{qa_analystId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tokenVersion\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400',()=>pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "OAS-01 | Contrato AUTH utilizable",
+          "description": "",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{qa_authUrl}}/docs-json"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+                  "pm.test('UpdateUserDto y UpdateRoleDto completos',()=>{const s=pm.response.json().components.schemas;pm.expect(s.UpdateUserDto.properties.username).to.be.an('object');pm.expect(s.UpdateRoleDto.properties.rol).to.be.an('object');});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "OAS-02 | Contrato STEGO estructurado",
+          "description": "",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{qa_stegoUrl}}/docs-json"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+                  "pm.test('Respuesta de analisis con esquema',()=>{const r=pm.response.json().paths['/api/steganography/analyze'].post.responses['201'];pm.expect(r.content['application/json'].schema.$ref).to.include('AnalysisResponseDto');});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 | Autenticacion y permisos",
+      "item": [
+        {
+          "name": "SEC-01 | Sin JWT",
+          "description": "",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{qa_stegoUrl}}/api/steganography/analyze",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "samples/original/reference.png",
+                  "contentType": "image/png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 401',()=>pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SEC-02 | JWT manipulado",
+          "description": "",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_tamperedJwt}}"
+              }
+            ],
+            "url": "{{qa_stegoUrl}}/api/steganography/analyze",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "samples/original/reference.png",
+                  "contentType": "image/png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const token=pm.environment.get('qa_analystJwt');pm.environment.set('qa_tamperedJwt',token.slice(0,-8)+'invalid!');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 401',()=>pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SEC-03 | USER no puede analizar",
+          "description": "",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_userJwt}}"
+              }
+            ],
+            "url": "{{qa_stegoUrl}}/api/steganography/analyze",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "samples/original/reference.png",
+                  "contentType": "image/png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 403',()=>pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SEC-04 | Asignacion duplicada",
+          "description": "",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_adminJwt}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{qa_authUrl}}/api/user-roles",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{qa_analystId}}\",\n  \"roleId\": \"{{qa_analystRoleId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 409',()=>pm.response.to.have.status(409));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SEC-05 | Sin identidad de servicio",
+          "description": "",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{qa_authUrl}}/internal/authorization/check",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subject_token\": \"{{qa_analystJwt}}\",\n  \"action\": \"steganography.analyze\",\n  \"resource_id\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 401',()=>pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04 | Imagenes y resultados",
+      "description": "Seleccionar archivos locales en Body si Postman no resuelve las rutas relativas. Directorio de trabajo: Codigo.",
+      "item": [
+        {
+          "name": "IMG-01 | PNG de referencia",
+          "description": "",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_analystJwt}}"
+              }
+            ],
+            "url": "{{qa_stegoUrl}}/api/steganography/analyze",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "samples/original/reference.png",
+                  "contentType": "image/png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+                  "const j=pm.response.json();pm.test('Referencia sin indicios',()=>pm.expect(j.status).to.eql('sin_indicios'));if(j.id)pm.environment.set('qa_analysisId',j.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "IMG-02 | Carga LSB densa",
+          "description": "",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_analystJwt}}"
+              }
+            ],
+            "url": "{{qa_stegoUrl}}/api/steganography/analyze",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "samples/stego/lsb-random-payload.png",
+                  "contentType": "image/png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+                  "pm.test('Clasificacion sospechoso',()=>pm.expect(pm.response.json().status).to.eql('sospechoso'));",
+                  "pm.test('Trazabilidad del archivo',()=>{const j=pm.response.json();pm.expect(j.sha256).to.match(/^[a-f0-9]{64}$/);pm.expect(j).to.include.all.keys('id','user_id','technique','indicators','created_at','action','limitations');});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "IMG-03 | Ruido original ambiguo",
+          "description": "",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_analystJwt}}"
+              }
+            ],
+            "url": "{{qa_stegoUrl}}/api/steganography/analyze",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "samples/original/noisy-unmodified.png",
+                  "contentType": "image/png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+                  "pm.test('Clasificacion no_concluyente',()=>pm.expect(pm.response.json().status).to.eql('no_concluyente'));",
+                  "pm.test('Trazabilidad del archivo',()=>{const j=pm.response.json();pm.expect(j.sha256).to.match(/^[a-f0-9]{64}$/);pm.expect(j).to.include.all.keys('id','user_id','technique','indicators','created_at','action','limitations');});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "IMG-04 | Carga dispersa: limitacion conocida",
+          "description": "",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_analystJwt}}"
+              }
+            ],
+            "url": "{{qa_stegoUrl}}/api/steganography/analyze",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "samples/stego/lsb-sparse-payload.png",
+                  "contentType": "image/png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+                  "pm.test('Clasificacion sin_indicios',()=>pm.expect(pm.response.json().status).to.eql('sin_indicios'));",
+                  "pm.test('Trazabilidad del archivo',()=>{const j=pm.response.json();pm.expect(j.sha256).to.match(/^[a-f0-9]{64}$/);pm.expect(j).to.include.all.keys('id','user_id','technique','indicators','created_at','action','limitations');});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "IMG-05 | Archivo con firma incompatible",
+          "description": "",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_analystJwt}}"
+              }
+            ],
+            "url": "{{qa_stegoUrl}}/api/steganography/analyze",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "tmp/t10/jpeg-named-png.png",
+                  "contentType": "image/png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 415',()=>pm.response.to.have.status(415));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "IMG-06 | PNG corrupto",
+          "description": "",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_analystJwt}}"
+              }
+            ],
+            "url": "{{qa_stegoUrl}}/api/steganography/analyze",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "tmp/t10/corrupt.png",
+                  "contentType": "image/png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 422',()=>pm.response.to.have.status(422));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "IMG-07 | Carga excesiva",
+          "description": "",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_analystJwt}}"
+              }
+            ],
+            "url": "{{qa_stegoUrl}}/api/steganography/analyze",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "tmp/t10/oversized.png",
+                  "contentType": "image/png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 413',()=>pm.response.to.have.status(413));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "RES-01 | Leer resultado propio",
+          "description": "",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_analystJwt}}"
+              }
+            ],
+            "url": "{{qa_stegoUrl}}/api/steganography/results/{{qa_analysisId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "RES-02 | ADMIN puede consultar resultado",
+          "description": "",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_adminJwt}}"
+              }
+            ],
+            "url": "{{qa_stegoUrl}}/api/steganography/results/{{qa_analysisId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "05 | Revocacion y restauracion",
+      "description": "Ejecutar completa y en orden. La ultima solicitud RESTAURA el permiso de demostracion. No interrumpir tras revocar.",
+      "item": [
+        {
+          "name": "REV-01 | Revocar ANALYST",
+          "description": "",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_adminJwt}}"
+              }
+            ],
+            "url": "{{qa_authUrl}}/api/user-roles/{{qa_assignmentId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "REV-02 | Mismo JWT tras revocacion",
+          "description": "",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_analystJwt}}"
+              }
+            ],
+            "url": "{{qa_stegoUrl}}/api/steganography/analyze",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "samples/original/reference.png",
+                  "contentType": "image/png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 403',()=>pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "REV-03 | Restaurar ANALYST",
+          "description": "",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_adminJwt}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{qa_authUrl}}/api/user-roles",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{qa_analystId}}\",\n  \"roleId\": \"{{qa_analystRoleId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+                  "if(pm.response.code===201)pm.environment.set('qa_assignmentId',pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "REV-04 | Permiso restaurado",
+          "description": "",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_analystJwt}}"
+              }
+            ],
+            "url": "{{qa_stegoUrl}}/api/steganography/analyze",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "samples/original/reference.png",
+                  "contentType": "image/png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+                  "pm.test('Clasificacion sin_indicios',()=>pm.expect(pm.response.json().status).to.eql('sin_indicios'));",
+                  "pm.test('Trazabilidad del archivo',()=>{const j=pm.response.json();pm.expect(j.sha256).to.match(/^[a-f0-9]{64}$/);pm.expect(j).to.include.all.keys('id','user_id','technique','indicators','created_at','action','limitations');});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "06 | Logout (ejecutar al final)",
+      "description": "Invalida la sesion ANALYST. Volver a preparar sesiones para repetir.",
+      "item": [
+        {
+          "name": "SES-02 | Logout",
+          "description": "",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_analystJwt}}"
+              }
+            ],
+            "url": "{{qa_authUrl}}/api/auth/logout"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 201',()=>pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SES-03 | JWT invalidado tras logout",
+          "description": "",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_analystJwt}}"
+              }
+            ],
+            "url": "{{qa_stegoUrl}}/api/steganography/analyze",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "samples/original/reference.png",
+                  "contentType": "image/png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 401',()=>pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "MANUAL | AUTH no disponible",
+      "description": "NO incluir en un run completo. Detener AUTH desde terminal antes de enviar. Restaurar AUTH inmediatamente despues. Requiere JWT ADMIN vigente.",
+      "item": [
+        {
+          "name": "DIS-01 | Fallo seguro sin AUTH",
+          "description": "",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{qa_adminJwt}}"
+              }
+            ],
+            "url": "{{qa_stegoUrl}}/api/steganography/analyze",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "samples/original/reference.png",
+                  "contentType": "image/png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 503',()=>pm.response.to.have.status(503));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

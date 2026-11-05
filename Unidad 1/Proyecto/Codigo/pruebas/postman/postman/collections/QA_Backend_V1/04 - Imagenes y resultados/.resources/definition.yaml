@@ -1,0 +1,4 @@
+$kind: collection
+name: 04 | Imagenes y resultados
+description: "Seleccionar archivos locales en Body si Postman no resuelve las rutas relativas. Directorio de trabajo: Codigo."
+order: 4000

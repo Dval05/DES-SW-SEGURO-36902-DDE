@@ -18,33 +18,17 @@ import { UserRole } from '../../user-roles/entities/user-role.entity.js';
 @Entity({
   name: 'users',
 })
-@Check(
-  'CHK_users_cedula',
-  `"cedula" ~ '^[0-9]{10}$'`,
-)
-@Index(
-  'UQ_users_cedula',
-  ['cedula'],
-  {
-    unique: true,
-  },
-)
-@Index(
-  'UQ_users_username',
-  ['username'],
-  {
-    unique: true,
-  },
-)
-@Index(
-  'UQ_users_email',
-  ['email'],
-  {
-    unique: true,
-  },
-)
+@Check('CHK_users_cedula', `"cedula" ~ '^[0-9]{10}$'`)
+@Index('UQ_users_cedula', ['cedula'], {
+  unique: true,
+})
+@Index('UQ_users_username', ['username'], {
+  unique: true,
+})
+@Index('UQ_users_email', ['email'], {
+  unique: true,
+})
 export class User {
-
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
@@ -93,6 +77,7 @@ export class User {
   })
   passwordHash!: string;
 
+  @Exclude()
   @Column({ name: 'token_version', type: 'integer', default: 0 })
   tokenVersion!: number;
 
@@ -126,9 +111,6 @@ export class User {
   })
   fechaEliminacion!: Date | null;
 
-  @OneToMany(
-    () => UserRole,
-    (userRole) => userRole.user,
-  )
+  @OneToMany(() => UserRole, (userRole) => userRole.user)
   userRoles!: UserRole[];
 }

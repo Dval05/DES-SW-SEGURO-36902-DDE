@@ -1,0 +1,4 @@
+$kind: collection
+name: 06 | Logout (ejecutar al final)
+description: Invalida la sesion ANALYST. Volver a preparar sesiones para repetir.
+order: 6000

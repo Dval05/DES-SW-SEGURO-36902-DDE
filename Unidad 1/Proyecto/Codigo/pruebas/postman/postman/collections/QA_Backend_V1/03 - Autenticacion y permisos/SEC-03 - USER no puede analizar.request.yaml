@@ -1,0 +1,19 @@
+$kind: http-request
+name: SEC-03 | USER no puede analizar
+description: ""
+url: "{{qa_stegoUrl}}/api/steganography/analyze"
+method: POST
+headers:
+  Authorization: Bearer {{qa_userJwt}}
+body:
+  type: formdata
+  content:
+    - type: file
+      key: file
+      src: samples/original/reference.png
+      contentType: image/png
+scripts:
+  - type: afterResponse
+    code: pm.test('HTTP 403',()=>pm.response.to.have.status(403));
+    language: text/javascript
+order: 3000

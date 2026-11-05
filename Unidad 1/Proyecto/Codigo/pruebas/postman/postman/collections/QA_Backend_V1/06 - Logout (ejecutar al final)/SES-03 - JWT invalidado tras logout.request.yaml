@@ -1,0 +1,19 @@
+$kind: http-request
+name: SES-03 | JWT invalidado tras logout
+description: ""
+url: "{{qa_stegoUrl}}/api/steganography/analyze"
+method: POST
+headers:
+  Authorization: Bearer {{qa_analystJwt}}
+body:
+  type: formdata
+  content:
+    - type: file
+      key: file
+      src: samples/original/reference.png
+      contentType: image/png
+scripts:
+  - type: afterResponse
+    code: pm.test('HTTP 401',()=>pm.response.to.have.status(401));
+    language: text/javascript
+order: 2000

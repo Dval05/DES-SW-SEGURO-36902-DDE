@@ -1,0 +1,19 @@
+$kind: http-request
+name: IMG-07 | Carga excesiva
+description: ""
+url: "{{qa_stegoUrl}}/api/steganography/analyze"
+method: POST
+headers:
+  Authorization: Bearer {{qa_analystJwt}}
+body:
+  type: formdata
+  content:
+    - type: file
+      key: file
+      src: tmp/t10/oversized.png
+      contentType: image/png
+scripts:
+  - type: afterResponse
+    code: pm.test('HTTP 413',()=>pm.response.to.have.status(413));
+    language: text/javascript
+order: 7000

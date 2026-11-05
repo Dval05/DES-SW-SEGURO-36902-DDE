@@ -1,0 +1,14 @@
+$kind: http-request
+name: SET-03 | Obtener asignacion ANALYST
+description: ""
+url: "{{qa_authUrl}}/api/user-roles"
+method: GET
+headers:
+  Authorization: Bearer {{qa_adminJwt}}
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('HTTP 200',()=>pm.response.to.have.status(200));
+      const relation=pm.response.json().find(x=>x.userId===pm.environment.get('qa_analystId')&&x.roleId===pm.environment.get('qa_analystRoleId'));pm.test('Asignacion vigente',()=>pm.expect(relation).to.be.an('object'));if(relation)pm.environment.set('qa_assignmentId',relation.id);
+    language: text/javascript
+order: 9000

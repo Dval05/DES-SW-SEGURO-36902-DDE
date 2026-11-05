@@ -1,0 +1,14 @@
+$kind: http-request
+name: SET-02 | Obtener rol ANALYST
+description: ""
+url: "{{qa_authUrl}}/api/roles"
+method: GET
+headers:
+  Authorization: Bearer {{qa_adminJwt}}
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('HTTP 200',()=>pm.response.to.have.status(200));
+      const role=pm.response.json().find(x=>x.rol==='ANALYST');pm.test('Rol ANALYST existe',()=>pm.expect(role).to.be.an('object'));if(role)pm.environment.set('qa_analystRoleId',role.id);
+    language: text/javascript
+order: 8000

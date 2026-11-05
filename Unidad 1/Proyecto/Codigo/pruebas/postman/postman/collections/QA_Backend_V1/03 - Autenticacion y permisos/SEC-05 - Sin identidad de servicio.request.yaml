@@ -1,0 +1,20 @@
+$kind: http-request
+name: SEC-05 | Sin identidad de servicio
+description: ""
+url: "{{qa_authUrl}}/internal/authorization/check"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "subject_token": "{{qa_analystJwt}}",
+      "action": "steganography.analyze",
+      "resource_id": null
+    }
+scripts:
+  - type: afterResponse
+    code: pm.test('HTTP 401',()=>pm.response.to.have.status(401));
+    language: text/javascript
+order: 5000

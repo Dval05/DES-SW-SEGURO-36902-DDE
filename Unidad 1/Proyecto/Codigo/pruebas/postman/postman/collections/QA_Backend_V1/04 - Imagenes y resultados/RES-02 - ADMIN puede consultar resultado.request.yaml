@@ -1,0 +1,12 @@
+$kind: http-request
+name: RES-02 | ADMIN puede consultar resultado
+description: ""
+url: "{{qa_stegoUrl}}/api/steganography/results/{{qa_analysisId}}"
+method: GET
+headers:
+  Authorization: Bearer {{qa_adminJwt}}
+scripts:
+  - type: afterResponse
+    code: pm.test('HTTP 200',()=>pm.response.to.have.status(200));
+    language: text/javascript
+order: 9000

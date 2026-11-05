@@ -1,0 +1,22 @@
+$kind: http-request
+name: SEC-02 | JWT manipulado
+description: ""
+url: "{{qa_stegoUrl}}/api/steganography/analyze"
+method: POST
+headers:
+  Authorization: Bearer {{qa_tamperedJwt}}
+body:
+  type: formdata
+  content:
+    - type: file
+      key: file
+      src: samples/original/reference.png
+      contentType: image/png
+scripts:
+  - type: beforeRequest
+    code: const token=pm.environment.get('qa_analystJwt');pm.environment.set('qa_tamperedJwt',token.slice(0,-8)+'invalid!');
+    language: text/javascript
+  - type: afterResponse
+    code: pm.test('HTTP 401',()=>pm.response.to.have.status(401));
+    language: text/javascript
+order: 2000

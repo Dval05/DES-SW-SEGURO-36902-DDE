@@ -1,0 +1,14 @@
+$kind: http-request
+name: SET-01 | Obtener usuarios e identificador ANALYST
+description: ""
+url: "{{qa_authUrl}}/api/users"
+method: GET
+headers:
+  Authorization: Bearer {{qa_adminJwt}}
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('HTTP 200',()=>pm.response.to.have.status(200));
+      const users=pm.response.json();const u=users.find(x=>x.username===pm.environment.get('qa_analystIdentity'));pm.test('ANALYST existe',()=>pm.expect(u).to.be.an('object'));if(u)pm.environment.set('qa_analystId',u.id);
+    language: text/javascript
+order: 7000

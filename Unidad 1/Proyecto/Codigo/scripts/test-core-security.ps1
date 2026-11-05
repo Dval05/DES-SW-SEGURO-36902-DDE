@@ -30,3 +30,19 @@ Assert-Equal $before 201 'T07 before revocation'
 Assert-Equal $after 403 'T07 after revocation, same JWT'
 Assert-Equal $horizontal 403 'T11 foreign resource'
 if ($authAudit -lt 1 -or $stegoAudit -lt 1) { throw 'T12 auditoria ausente' }
+$authLogs=(docker compose logs --no-color --since 2m auth) -join "`n"
+$stegoLogs=(docker compose logs --no-color --since 2m stego) -join "`n"
+foreach($credential in @($admin,$analyst,$user,'ChangeMe-Admin-2026!','Analyst-Pass-2026!','User-Secure-2026!')){
+  if($authLogs.Contains($credential) -or $stegoLogs.Contains($credential)){throw 'T12 se divulgo una credencial o JWT completo'}
+}
+if(($authLogs+$stegoLogs) -match '\$argon2(id|i|d)\$|BEGIN (RSA )?PRIVATE KEY'){throw 'T12 se divulgo un hash de clave o una clave privada'}
+$records=@($authLogs -split "`n" | ForEach-Object {
+  $clean=$_ -replace '\x1b\[[0-9;]*m',''
+  $start=$clean.IndexOf('{"timestamp"')
+  if($start -ge 0){$clean.Substring($start)|ConvertFrom-Json}
+})
+foreach($event in @('role_revoked','role_assigned')){
+  $record=$records|Where-Object {$_.event -eq $event -and $_.targetUserId -eq $ids[0]}|Select-Object -Last 1
+  if(!$record -or !$record.actorId -or !$record.requestId -or $record.targetRoleId -ne $ids[1]){throw "T12 trazabilidad incompleta para $event"}
+}
+Write-Output 'PASS T12 trazabilidad administrativa y ausencia de secretos'

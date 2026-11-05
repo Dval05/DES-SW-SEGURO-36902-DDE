@@ -1,0 +1,4 @@
+$kind: collection
+name: 01 | Preparacion y sesiones
+description: Ejecutar primero. Los tokens quedan en el entorno QA, nunca en la coleccion exportada.
+order: 1000

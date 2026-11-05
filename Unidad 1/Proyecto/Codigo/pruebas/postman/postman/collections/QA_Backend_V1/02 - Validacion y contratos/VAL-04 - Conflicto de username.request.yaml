@@ -1,0 +1,19 @@
+$kind: http-request
+name: VAL-04 | Conflicto de username
+description: ""
+url: "{{qa_authUrl}}/api/users/{{qa_analystId}}"
+method: PATCH
+headers:
+  Authorization: Bearer {{qa_adminJwt}}
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "username": "{{qa_adminIdentity}}"
+    }
+scripts:
+  - type: afterResponse
+    code: pm.test('HTTP 409',()=>pm.response.to.have.status(409));
+    language: text/javascript
+order: 4000

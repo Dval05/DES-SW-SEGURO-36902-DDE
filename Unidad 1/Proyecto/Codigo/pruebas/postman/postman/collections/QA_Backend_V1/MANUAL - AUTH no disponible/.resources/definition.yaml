@@ -1,0 +1,4 @@
+$kind: collection
+name: MANUAL | AUTH no disponible
+description: NO incluir en un run completo. Detener AUTH desde terminal antes de enviar. Restaurar AUTH inmediatamente despues. Requiere JWT ADMIN vigente.
+order: 7000

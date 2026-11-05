@@ -1,0 +1,20 @@
+$kind: http-request
+name: SEC-04 | Asignacion duplicada
+description: ""
+url: "{{qa_authUrl}}/api/user-roles"
+method: POST
+headers:
+  Authorization: Bearer {{qa_adminJwt}}
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "userId": "{{qa_analystId}}",
+      "roleId": "{{qa_analystRoleId}}"
+    }
+scripts:
+  - type: afterResponse
+    code: pm.test('HTTP 409',()=>pm.response.to.have.status(409));
+    language: text/javascript
+order: 4000

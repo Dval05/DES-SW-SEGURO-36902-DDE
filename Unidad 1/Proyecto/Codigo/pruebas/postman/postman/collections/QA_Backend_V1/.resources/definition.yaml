@@ -1,0 +1,3 @@
+$kind: collection
+name: QA Backend V1 | Pre-commit y regresion | Nueva
+description: "Coleccion nueva, independiente de la sustentacion anterior. Estado: preparada, pendiente de ejecucion en la GUI. No ejecutar la carpeta MANUAL dentro del Runner general. Credenciales y JWT solo en un entorno LOCAL; no exportarlos."

@@ -1,0 +1,19 @@
+$kind: http-request
+name: IMG-05 | Archivo con firma incompatible
+description: ""
+url: "{{qa_stegoUrl}}/api/steganography/analyze"
+method: POST
+headers:
+  Authorization: Bearer {{qa_analystJwt}}
+body:
+  type: formdata
+  content:
+    - type: file
+      key: file
+      src: tmp/t10/jpeg-named-png.png
+      contentType: image/png
+scripts:
+  - type: afterResponse
+    code: pm.test('HTTP 415',()=>pm.response.to.have.status(415));
+    language: text/javascript
+order: 5000

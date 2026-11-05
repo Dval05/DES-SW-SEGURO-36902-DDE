@@ -1,0 +1,4 @@
+$kind: collection
+name: 05 | Revocacion y restauracion
+description: Ejecutar completa y en orden. La ultima solicitud RESTAURA el permiso de demostracion. No interrumpir tras revocar.
+order: 5000

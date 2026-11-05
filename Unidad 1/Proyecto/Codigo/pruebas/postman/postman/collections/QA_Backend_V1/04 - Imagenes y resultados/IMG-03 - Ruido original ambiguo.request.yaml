@@ -1,0 +1,22 @@
+$kind: http-request
+name: IMG-03 | Ruido original ambiguo
+description: ""
+url: "{{qa_stegoUrl}}/api/steganography/analyze"
+method: POST
+headers:
+  Authorization: Bearer {{qa_analystJwt}}
+body:
+  type: formdata
+  content:
+    - type: file
+      key: file
+      src: samples/original/noisy-unmodified.png
+      contentType: image/png
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('HTTP 201',()=>pm.response.to.have.status(201));
+      pm.test('Clasificacion no_concluyente',()=>pm.expect(pm.response.json().status).to.eql('no_concluyente'));
+      pm.test('Trazabilidad del archivo',()=>{const j=pm.response.json();pm.expect(j.sha256).to.match(/^[a-f0-9]{64}$/);pm.expect(j).to.include.all.keys('id','user_id','technique','indicators','created_at','action','limitations');});
+    language: text/javascript
+order: 3000

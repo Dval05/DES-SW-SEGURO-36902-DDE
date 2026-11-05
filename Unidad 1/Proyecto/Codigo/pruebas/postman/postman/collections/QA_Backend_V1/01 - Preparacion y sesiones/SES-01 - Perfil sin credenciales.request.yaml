@@ -1,0 +1,14 @@
+$kind: http-request
+name: SES-01 | Perfil sin credenciales
+description: ""
+url: "{{qa_authUrl}}/api/auth/profile"
+method: GET
+headers:
+  Authorization: Bearer {{qa_analystJwt}}
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('HTTP 200',()=>pm.response.to.have.status(200));
+      pm.test('Sin hash ni version de sesion',()=>{const j=pm.response.json();pm.expect(j).not.to.have.property('passwordHash');pm.expect(j).not.to.have.property('tokenVersion');});
+    language: text/javascript
+order: 6000

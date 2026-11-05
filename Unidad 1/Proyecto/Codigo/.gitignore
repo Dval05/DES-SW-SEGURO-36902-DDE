@@ -5,3 +5,7 @@ secrets/
 stego/data/
 tmp/
 *.log
+
+# Personal Postman workspace bindings and local history
+pruebas/postman/.postman/
+pruebas/postman/postman/globals/
