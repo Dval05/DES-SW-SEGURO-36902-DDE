@@ -1,0 +1,25 @@
+PASS GET /api/roles con ADMIN
+PASS PATCH /api/roles/{id} aplica descripción (Verificación 1e7441578bc24372908cb7ffa1f86a93)
+PASS GET /api/roles confirma cambio persistido (Verificación 1e7441578bc24372908cb7ffa1f86a93)
+PASS Descripción original restaurada (Analisis esteganografico)
+PASS Credencial histórica rechazada (401)
+PASS AUTH vincula la decisión al recurso (own) (fcbe9493-10b5-49b7-b95e-33783f63322d)
+PASS AUTH comprueba propietario y existencia (own) (active_role_grants_permission)
+PASS AUTH allowed (own) (True)
+PASS AUTH vincula la decisión al recurso (foreign) (fcbe9493-10b5-49b7-b95e-33783f63322d)
+PASS AUTH comprueba propietario y existencia (foreign) (resource_not_owned)
+PASS AUTH allowed (foreign) (False)
+PASS AUTH vincula la decisión al recurso (missing) (ff5a879f-2dac-41f2-bcb1-3c1e76d41703)
+PASS AUTH comprueba propietario y existencia (missing) (resource_not_found)
+PASS AUTH allowed (missing) (False)
+ Container secure-backend-v1-stego-1 Recreate 
+ Container secure-backend-v1-stego-1 Recreated 
+ Container secure-backend-v1-stego-1 Starting 
+ Container secure-backend-v1-stego-1 Started 
+ Container secure-backend-v1-stego-1 Waiting 
+ Container secure-backend-v1-stego-1 Healthy 
+PASS STEGO ejecuta un contenedor nuevo
+PASS Persistencia del identificador (fcbe9493-10b5-49b7-b95e-33783f63322d)
+PASS Persistencia de SHA-256 (4bfb614df52dbb2638aebc22a22dd6c9245e07d676ae2ff74ca1b510de82cdab)
+PASS Persistencia de clasificación (sospechoso)
+PASS comprobaciones de entrega

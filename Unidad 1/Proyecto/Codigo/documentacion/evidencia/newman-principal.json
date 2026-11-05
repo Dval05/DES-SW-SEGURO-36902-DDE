@@ -1,0 +1,484 @@
+{
+  "mode": "principal",
+  "stats": {
+    "iterations": {
+      "total": 1,
+      "pending": 0,
+      "failed": 0
+    },
+    "items": {
+      "total": 36,
+      "pending": 0,
+      "failed": 0
+    },
+    "scripts": {
+      "total": 37,
+      "pending": 0,
+      "failed": 0
+    },
+    "prerequests": {
+      "total": 36,
+      "pending": 0,
+      "failed": 0
+    },
+    "requests": {
+      "total": 36,
+      "pending": 0,
+      "failed": 0
+    },
+    "tests": {
+      "total": 36,
+      "pending": 0,
+      "failed": 0
+    },
+    "assertions": {
+      "total": 54,
+      "pending": 0,
+      "failed": 0
+    },
+    "testScripts": {
+      "total": 36,
+      "pending": 0,
+      "failed": 0
+    },
+    "prerequestScripts": {
+      "total": 1,
+      "pending": 0,
+      "failed": 0
+    }
+  },
+  "rows": [
+    {
+      "name": "INF-01 | AUTH disponible",
+      "http": 200,
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "INF-02 | STEGO disponible",
+      "http": 200,
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "SES-admin | Login ADMIN",
+      "http": 201,
+      "assertions": [
+        {
+          "name": "HTTP 201",
+          "passed": true
+        },
+        {
+          "name": "JWT emitido y expiracion acotada",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "SES-analyst | Login ANALYST",
+      "http": 201,
+      "assertions": [
+        {
+          "name": "HTTP 201",
+          "passed": true
+        },
+        {
+          "name": "JWT emitido y expiracion acotada",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "SES-user | Login USER",
+      "http": 201,
+      "assertions": [
+        {
+          "name": "HTTP 201",
+          "passed": true
+        },
+        {
+          "name": "JWT emitido y expiracion acotada",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "SES-01 | Perfil sin credenciales",
+      "http": 200,
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "Sin hash ni version de sesion",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "SET-01 | Obtener usuarios e identificador ANALYST",
+      "http": 200,
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "ANALYST existe",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "SET-02 | Obtener rol ANALYST",
+      "http": 200,
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "Rol ANALYST existe",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "SET-03 | Obtener asignacion ANALYST",
+      "http": 200,
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "Asignacion vigente",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "VAL-01 | UUID invalido",
+      "http": 400,
+      "assertions": [
+        {
+          "name": "HTTP 400",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "VAL-02 | Fecha invalida",
+      "http": 400,
+      "assertions": [
+        {
+          "name": "HTTP 400",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "VAL-03 | Null no permitido",
+      "http": 400,
+      "assertions": [
+        {
+          "name": "HTTP 400",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "VAL-04 | Conflicto de username",
+      "http": 409,
+      "assertions": [
+        {
+          "name": "HTTP 409",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "VAL-05 | Rechazar campo no permitido",
+      "http": 400,
+      "assertions": [
+        {
+          "name": "HTTP 400",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "OAS-01 | Contrato AUTH utilizable",
+      "http": 200,
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "UpdateUserDto y UpdateRoleDto completos",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "OAS-02 | Contrato STEGO estructurado",
+      "http": 200,
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "Respuesta de analisis con esquema",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "SEC-01 | Sin JWT",
+      "http": 401,
+      "assertions": [
+        {
+          "name": "HTTP 401",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "SEC-02 | JWT manipulado",
+      "http": 401,
+      "assertions": [
+        {
+          "name": "HTTP 401",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "SEC-03 | USER no puede analizar",
+      "http": 403,
+      "assertions": [
+        {
+          "name": "HTTP 403",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "SEC-04 | Asignacion duplicada",
+      "http": 409,
+      "assertions": [
+        {
+          "name": "HTTP 409",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "SEC-05 | Sin identidad de servicio",
+      "http": 401,
+      "assertions": [
+        {
+          "name": "HTTP 401",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "IMG-01 | PNG de referencia",
+      "http": 201,
+      "assertions": [
+        {
+          "name": "HTTP 201",
+          "passed": true
+        },
+        {
+          "name": "Referencia sin indicios",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "IMG-02 | Carga LSB densa",
+      "http": 201,
+      "assertions": [
+        {
+          "name": "HTTP 201",
+          "passed": true
+        },
+        {
+          "name": "Clasificacion sospechoso",
+          "passed": true
+        },
+        {
+          "name": "Trazabilidad del archivo",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "IMG-03 | Ruido original ambiguo",
+      "http": 201,
+      "assertions": [
+        {
+          "name": "HTTP 201",
+          "passed": true
+        },
+        {
+          "name": "Clasificacion no_concluyente",
+          "passed": true
+        },
+        {
+          "name": "Trazabilidad del archivo",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "IMG-04 | Carga dispersa: limitacion conocida",
+      "http": 201,
+      "assertions": [
+        {
+          "name": "HTTP 201",
+          "passed": true
+        },
+        {
+          "name": "Clasificacion sin_indicios",
+          "passed": true
+        },
+        {
+          "name": "Trazabilidad del archivo",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "IMG-05 | Archivo con firma incompatible",
+      "http": 415,
+      "assertions": [
+        {
+          "name": "HTTP 415",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "IMG-06 | PNG corrupto",
+      "http": 422,
+      "assertions": [
+        {
+          "name": "HTTP 422",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "IMG-07 | Carga excesiva",
+      "http": 413,
+      "assertions": [
+        {
+          "name": "HTTP 413",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "RES-01 | Leer resultado propio",
+      "http": 200,
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "RES-02 | ADMIN puede consultar resultado",
+      "http": 200,
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "REV-01 | Revocar ANALYST",
+      "http": 200,
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "REV-02 | Mismo JWT tras revocacion",
+      "http": 403,
+      "assertions": [
+        {
+          "name": "HTTP 403",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "REV-03 | Restaurar ANALYST",
+      "http": 201,
+      "assertions": [
+        {
+          "name": "HTTP 201",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "REV-04 | Permiso restaurado",
+      "http": 201,
+      "assertions": [
+        {
+          "name": "HTTP 201",
+          "passed": true
+        },
+        {
+          "name": "Clasificacion sin_indicios",
+          "passed": true
+        },
+        {
+          "name": "Trazabilidad del archivo",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "SES-02 | Logout",
+      "http": 201,
+      "assertions": [
+        {
+          "name": "HTTP 201",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "SES-03 | JWT invalidado tras logout",
+      "http": 401,
+      "assertions": [
+        {
+          "name": "HTTP 401",
+          "passed": true
+        }
+      ]
+    }
+  ]
+}

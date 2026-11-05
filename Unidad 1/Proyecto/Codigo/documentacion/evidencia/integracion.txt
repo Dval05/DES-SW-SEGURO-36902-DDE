@@ -1,0 +1,152 @@
+ Container secure-backend-v1-auth-1 Restarting 
+ Container secure-backend-v1-auth-1 Started 
+Datos demo listos: admin, analyst (ANALYST+USER) y user (USER).
+ Container secure-backend-v1-auth-1 Restarting 
+ Container secure-backend-v1-auth-1 Started 
+T02 valid=JWT invalid=401
+T03 no_token=401 tampered=401 expired=401
+T04 user=403
+T05 relations=admin,ADMIN;analyst,ANALYST;analyst,USER;user,USER
+T06 duplicate=409
+T07 before=201 after_same_jwt=403
+T11 foreign=403
+T12 auth_events=27 stego_events=31
+PASS T02 invalid password (401)
+PASS T03 missing token (401)
+PASS T03 tampered token (401)
+PASS T03 expired token (401)
+PASS T04 USER denied (403)
+PASS T06 duplicate assignment (409)
+PASS T07 before revocation (201)
+PASS T07 after revocation, same JWT (403)
+PASS T11 foreign resource (403)
+PASS T12 trazabilidad administrativa y ausencia de secretos
+ Container secure-backend-v1-auth-1 Restarting 
+ Container secure-backend-v1-auth-1 Started 
+header={"alg":"RS256","typ":"JWT"}
+
+case             http
+----             ----
+tamperedUsername 401
+tamperedSub      401
+fakeRoles        401
+wrongIssuer      401
+wrongAudience    401
+algNone          401
+
+logout_reuse=401
+PASS JWT tamperedUsername (401)
+PASS JWT tamperedSub (401)
+PASS JWT fakeRoles (401)
+PASS JWT wrongIssuer (401)
+PASS JWT wrongAudience (401)
+PASS JWT algNone (401)
+PASS Logout revokes JWT (401)
+ Container secure-backend-v1-auth-1 Restarting 
+ Container secure-backend-v1-auth-1 Started 
+PASS T10 oversized.png (413)
+PASS T10 corrupt.png (422)
+PASS T10 registro recuperado de corrupt.png (e52c7fde-f82d-4447-96c5-41d6f373e315)
+PASS T10 estado persistido de corrupt.png (error)
+PASS T10 motivo de corrupt.png (decode_failed_or_limit_exceeded)
+PASS T10 SHA-256 de corrupt.png (03944bca7618d33a35e7e96492fd2490f28add7f00db0ea2c72d01814185356d)
+PASS T10 excessive-pixels.png (422)
+PASS T10 registro recuperado de excessive-pixels.png (20ca44e2-e6a6-4211-af8a-9dccc014d7b0)
+PASS T10 estado persistido de excessive-pixels.png (error)
+PASS T10 motivo de excessive-pixels.png (decode_failed_or_limit_exceeded)
+PASS T10 SHA-256 de excessive-pixels.png (f06db64ac453cda5c404ef525e0ae980096ba21875f2b9cc4e46bab6b4c0c415)
+PASS T10 unsupported.gif (415)
+PASS T10 jpeg-named-png.png (415)
+PASS T10 análisis sin error tras rechazar los archivos (57)
+T10 oversized.png=413 corrupt.png=422 excessive-pixels.png=422 unsupported.gif=415 jpeg-named-png.png=415 successful_analyses_before=57 successful_analyses_after=57
+PASS RBAC before multipart size validation (403)
+ Container secure-backend-v1-auth-1 Restarting 
+ Container secure-backend-v1-auth-1 Started 
+PASS muestra LSB: mensaje oculto recuperado sin perdida
+PASS T09 samples/original/reference.png (sin_indicios)
+
+file        : samples/original/reference.png
+status      : sin_indicios
+score       : 0
+ones        : 0
+transitions : 0
+
+PASS T09 samples/original/checkerboard.png (sin_indicios)
+file        : samples/original/checkerboard.png
+status      : sin_indicios
+score       : 0
+ones        : 0
+transitions : 0
+
+PASS T09 samples/original/noisy-unmodified.png (no_concluyente)
+file        : samples/original/noisy-unmodified.png
+status      : no_concluyente
+score       : 0,998324
+ones        : 0,498383
+transitions : 0,500058
+
+PASS T09 samples/stego/lsb-random-payload.png (sospechoso)
+file        : samples/stego/lsb-random-payload.png
+status      : sospechoso
+score       : 0,997958
+ones        : 0,500966
+transitions : 0,498924
+
+PASS T09 samples/stego/lsb-sparse-payload.png (sin_indicios)
+file        : samples/stego/lsb-sparse-payload.png
+status      : sin_indicios
+score       : 0,076248
+ones        : 0,025416
+transitions : 0,050832
+
+PASS T09 samples/stego/lsb-inconclusive-pattern.png (no_concluyente)
+file        : samples/stego/lsb-inconclusive-pattern.png
+status      : no_concluyente
+score       : 0,937497
+ones        : 0,4375
+transitions : 0,499997
+
+ Container secure-backend-v1-auth-1 Restarting 
+ Container secure-backend-v1-auth-1 Started 
+ Container secure-backend-v1-auth-1 Stopping 
+ Container secure-backend-v1-auth-1 Stopped 
+PASS T08 AUTH unavailable (503)
+ Container secure-backend-v1-auth-db-1 Waiting 
+ Container secure-backend-v1-auth-db-1 Healthy 
+ Container secure-backend-v1-auth-1 Starting 
+ Container secure-backend-v1-auth-1 Started 
+AUTH restored=200
+PASS T08 AUTH restored (200)
+ Container secure-backend-v1-auth-1 Restarting 
+ Container secure-backend-v1-auth-1 Started 
+ Container secure-backend-v1-stego-1 Stopping 
+ Container secure-backend-v1-stego-1 Stopped 
+PASS T01 AUTH with STEGO stopped (200)
+ Container secure-backend-v1-auth-db-1 Waiting 
+ Container secure-backend-v1-auth-db-1 Healthy 
+ Container secure-backend-v1-auth-1 Waiting 
+ Container secure-backend-v1-auth-1 Healthy 
+ Container secure-backend-v1-stego-1 Starting 
+ Container secure-backend-v1-stego-1 Started 
+NAME                          IMAGE                     COMMAND                  SERVICE   CREATED         STATUS                    PORTS
+secure-backend-v1-auth-1      secure-backend-v1-auth    "docker-entrypoint.s…"   auth      3 minutes ago   Up 15 seconds (healthy)   127.0.0.1:3001->3001/tcp
+secure-backend-v1-auth-db-1   postgres:17-alpine        "docker-entrypoint.s…"   auth-db   7 hours ago     Up 7 hours (healthy)      127.0.0.1:5435->5432/tcp
+secure-backend-v1-stego-1     secure-backend-v1-stego   "docker-entrypoint.s…"   stego     3 minutes ago   Up 3 seconds              127.0.0.1:3002->3002/tcp
+ Container secure-backend-v1-auth-1 Stopping 
+ Container secure-backend-v1-auth-1 Stopped 
+PASS T01 STEGO with AUTH stopped (200)
+ Container secure-backend-v1-auth-db-1 Waiting 
+ Container secure-backend-v1-auth-db-1 Healthy 
+ Container secure-backend-v1-auth-1 Starting 
+ Container secure-backend-v1-auth-1 Started 
+ Container secure-backend-v1-auth-1 Restarting 
+ Container secure-backend-v1-auth-1 Started 
+PASS Login attempt 1 (401)
+PASS Login attempt 2 (401)
+PASS Login attempt 3 (401)
+PASS Login attempt 4 (401)
+PASS Login attempt 5 (401)
+PASS Login attempt 6 (429)
+ Container secure-backend-v1-auth-1 Restarting 
+ Container secure-backend-v1-auth-1 Started 
+PASS integration suite

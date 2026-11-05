@@ -1,0 +1,71 @@
+{
+  "fecha": "2026-11-05",
+  "base": "2eb473f18a2f7a233cad24faa5b19a46d506961f",
+  "cambiosLocales": true,
+  "estado": "exito_parcial",
+  "notaEstimada": 18.5,
+  "oficiales": {
+    "aprobadas": 12,
+    "fallidas": 0,
+    "noVerificadas": 0,
+    "casos": [
+      {
+        "id": "T01",
+        "estado": "aprobada"
+      },
+      {
+        "id": "T02",
+        "estado": "aprobada"
+      },
+      {
+        "id": "T03",
+        "estado": "aprobada"
+      },
+      {
+        "id": "T04",
+        "estado": "aprobada"
+      },
+      {
+        "id": "T05",
+        "estado": "aprobada"
+      },
+      {
+        "id": "T06",
+        "estado": "aprobada"
+      },
+      {
+        "id": "T07",
+        "estado": "aprobada"
+      },
+      {
+        "id": "T08",
+        "estado": "aprobada"
+      },
+      {
+        "id": "T09",
+        "estado": "aprobada"
+      },
+      {
+        "id": "T10",
+        "estado": "aprobada"
+      },
+      {
+        "id": "T11",
+        "estado": "aprobada"
+      },
+      {
+        "id": "T12",
+        "estado": "aprobada"
+      }
+    ]
+  },
+  "automaticas": {
+    "unitarias": 34,
+    "e2e": 17
+  },
+  "hallazgos": [
+    "S01",
+    "S02"
+  ],
+  "postmanGui": "no_verificado"
+}

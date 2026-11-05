@@ -1,0 +1,19 @@
+[PRE-COMMIT] Sin errores de whitespace
+[PRE-COMMIT] auth: lint, build y unitarias
+[PRE-COMMIT] npm run lint --prefix auth
+[PRE-COMMIT] npm run build --prefix auth
+[PRE-COMMIT] npm test --prefix auth -- --runInBand
+Test Suites: 3 passed, 3 total
+Tests:       13 passed, 13 total
+[PRE-COMMIT] stego: lint, build y unitarias
+[PRE-COMMIT] npm run lint --prefix stego
+[PRE-COMMIT] npm run build --prefix stego
+[PRE-COMMIT] npm test --prefix stego
+      Tests  21 passed (21)
+[PRE-COMMIT] Docker disponible (PostgreSQL temporal de e2e)
+[PRE-COMMIT] npm run test:e2e --prefix auth -- --runInBand
+Test Suites: 1 passed, 1 total
+Tests:       11 passed, 11 total
+[PRE-COMMIT] npm run test:e2e --prefix stego
+      Tests  6 passed (6)
+PASS: comprobaciones previas al commit aprobadas.

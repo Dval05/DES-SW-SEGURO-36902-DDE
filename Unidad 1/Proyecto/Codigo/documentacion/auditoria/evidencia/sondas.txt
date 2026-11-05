@@ -1,0 +1,40 @@
+OpenAPI post /api/auth/login OK
+OpenAPI get /api/auth/profile OK
+OpenAPI post /api/auth/logout OK
+OpenAPI post /api/users OK
+OpenAPI get /api/users OK
+OpenAPI patch /api/users/{id} OK
+OpenAPI post /api/roles OK
+OpenAPI get /api/roles OK
+OpenAPI patch /api/roles/{id} OK
+OpenAPI post /api/user-roles OK
+OpenAPI delete /api/user-roles/{id} OK
+OpenAPI post /internal/authorization/check OK
+OpenAPI post /api/steganography/analyze OK
+OpenAPI get /api/steganography/results/{id} OK
+login_entrada_sql=401 esperado=401
+user_cabeceras_admin_en_users=403 esperado=403
+user_cabeceras_admin_en_stego=403 esperado=403
+interno_sin_token_servicio=401 esperado=401
+interno_con_token_por_defecto=aceptado; decision_usuario=False
+roles|id, name, description, status, version, created_at, updated_at, deleted_at
+user_roles|id, user_id, role_id, assigned_at
+users|id, cedula, nombres, apellidos, fecha_nacimiento, username, email, password_hash, token_version, status, version, created_at, updated_at, deleted_at
+users|PRIMARY KEY (id)
+users|UNIQUE (cedula)
+users|UNIQUE (email)
+users|UNIQUE (username)
+roles|PRIMARY KEY (id)
+roles|UNIQUE (name)
+user_roles|FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
+user_roles|FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+user_roles|PRIMARY KEY (id)
+user_roles|UNIQUE (user_id, role_id)
+3|3
+analisis_correlacionado status=sospechoso score=0.997958 id=63207c43-fd70-4501-ad44-e8384c3a8cac requestId=4ec3190e-2f65-408a-b5e4-f754d1b8301d
+auditoria servicio=auth evento=authorization_decision requestId=4ec3190e-2f65-408a-b5e4-f754d1b8301d
+auditoria servicio=stego evento=analysis_completed requestId=4ec3190e-2f65-408a-b5e4-f754d1b8301d
+decision_auth resource_id=63207c43-fd70-4501-ad44-e8384c3a8cac allowed=True
+decision_auth resource_id=17b88679-bc5d-4e98-888e-3670aba7220b allowed=True
+resultado_propio=200 esperado=200
+resultado_inexistente=404 esperado=404
