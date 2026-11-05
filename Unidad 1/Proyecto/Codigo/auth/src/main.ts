@@ -11,7 +11,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api', { exclude: ['internal/{*path}', 'health'] });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector))); app.useGlobalFilters(new AllExceptionsFilter());
-  const config = new DocumentBuilder().setTitle('AUTH API').setVersion('1.0').addBearerAuth().build();
+  const config = new DocumentBuilder().setTitle('AUTH API').setVersion('1.0').addBearerAuth().addApiKey({type:'apiKey',in:'header',name:'x-service-token'},'serviceToken').build();
   SwaggerModule.setup('docs', app, SwaggerModule.createDocument(app, config));
   await app.listen(process.env.PORT ?? 3001, '0.0.0.0');
 }

@@ -1,6 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
@@ -19,9 +20,9 @@ import { AuditModule } from './common/audit.module';
     TypeOrmModule.forRootAsync({ inject: [ConfigService], useFactory: (c: ConfigService) => ({
       type: 'postgres', host: c.getOrThrow('DB_HOST'), port: c.getOrThrow('DB_PORT'), username: c.getOrThrow('DB_USERNAME'),
       password: c.getOrThrow('DB_PASSWORD'), database: c.getOrThrow('DB_DATABASE'), autoLoadEntities: true,
-      synchronize: c.get('DB_SYNCHRONIZE') === 'true', ssl: c.get('DB_SSL') === 'true' ? { rejectUnauthorized: true } : false,
+      synchronize: false, migrations: [__dirname + '/migrations/*{.ts,.js}'], migrationsRun: true, ssl: c.get('DB_SSL') === 'true' ? { rejectUnauthorized: true } : false,
     }) }),
     AuditModule, UsersModule, RolesModule, UserRolesModule, AuthModule,
-  ], controllers: [AppController], providers: [SeedService],
+  ], controllers: [AppController], providers: [SeedService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule implements NestModule { configure(consumer: MiddlewareConsumer) { consumer.apply(RequestIdMiddleware).forRoutes('*'); } }

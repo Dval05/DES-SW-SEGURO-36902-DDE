@@ -20,7 +20,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-local-auth-password-2026}
       DB_DATABASE: auth
       DB_SSL: "false"
-      DB_SYNCHRONIZE: "true"
+      DB_SYNCHRONIZE: "false"
       JWT_PRIVATE_KEY_PATH: /run/secrets/jwt-private.pem
       JWT_PUBLIC_KEY_PATH: /run/secrets/jwt-public.pem
       JWT_ISSUER: secure-auth

@@ -5,12 +5,7 @@ Dos microservicios NestJS independientes. AUTH administra identidades en Postgre
 ## Inicio rápido en PowerShell
 
 ```powershell
-Set-Location 'C:\Users\ERICK\Documents\Universidad\Erick\7.Septimo Semestre\Desarrollo Software Seguro\Proyecto'
-.\scripts\generate-secrets.ps1
-.\scripts\setup-demo.ps1
-docker compose config
-docker compose up -d --build
-docker compose ps
+.\scripts\start-demo.ps1
 ```
 
 Credencial de demostración: `admin` / `ChangeMe-Admin-2026!`. Cámbiela mediante `SEED_ADMIN_PASSWORD` antes de un uso distinto a la sustentación.
